@@ -3,54 +3,6 @@
 ## 1. System Architecture
 This service is designed using a **Event-Driven, Queue-Based Architecture** to ensure high reliability, scalability, and data consistency when synchronizing inventory from multiple disparate sources.
 
-### High-Level Design (Mermaid)
-```mermaid
-graph TD
-    subgraph "External Sources"
-        MA[Marketplace A\n(Webhook push)]
-        MB[Marketplace B\n(Polling pull)]
-    end
-
-    subgraph "Ingestion Layer"
-        WC[Webhook Controller]
-        PS[Polling Service\n(Cron + Circuit Breaker)]
-    end
-
-    subgraph "Standardization Layer"
-        Adapters[Adapters\n(Standardize to InternalInventory)]
-    end
-
-    subgraph "Reliability Layer"
-        Queue[Redis Queue\n(BullMQ)]
-    end
-
-    subgraph "Processing Layer"
-        Worker[Inventory Worker]
-        Lock[Distributed Lock\n(Redlock)]
-    end
-
-    subgraph "Persistence Layer"
-        DB[(PostgreSQL)]
-        Redis[(Redis)]
-    end
-
-    MA -->|POST /webhooks| WC
-    PS -->|GET /inventory| MB
-    
-    WC --> Adapters
-    PS --> Adapters
-    
-    Adapters -->|Standardized Data| Queue
-    
-    Queue -->|Process Job| Worker
-    Worker -->|Acquire Lock| Lock
-    Lock --x|Mutex| Worker
-    
-    Worker -->|Upsert| DB
-    Lock -.-> Redis
-```
-
----
 
 ## 2. Key Design Decisions
 
@@ -77,7 +29,6 @@ graph TD
 -   **Solution**: Implemented **Redlock** (Distributed Lock with Redis).
     -   Before updating `Product X`, the worker must acquire `lock:inventory:{productId}`.
     -   This enforces **Linearizability** for operations on the same product, while allowing full parallelism for different products.
-
 ---
 
 ## 3. How to Test
