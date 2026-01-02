@@ -1,0 +1,104 @@
+{
+    "info": {
+        "_postman_id": "inventory-sync-service-collection",
+        "name": "Inventory Sync Service",
+        "description": "Collection to test the Unified Inventory Synchronizer Service",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Health Check",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:3000/health",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "3000",
+                    "path": [
+                        "health"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Marketplace A Webhook (Push)",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "x-marketplace-signature",
+                        "value": "2498218175d68019409893d5aa4af40a232230113c4a22ad83f23a968600d8b7",
+                        "type": "text"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\"product_code\":\"PROD-POSTMAN-001\",\"available_stock\":50,\"timestamp\":\"2026-01-01T12:00:00Z\",\"warehouse\":\"WH-POSTMAN\"}",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    }
+                },
+                "url": {
+                    "raw": "http://localhost:3000/webhooks/marketplace-a",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "3000",
+                    "path": [
+                        "webhooks",
+                        "marketplace-a"
+                    ]
+                },
+                "description": "Note: The signature header is pre-calculated for the exact body below based on secret 'secret'. If you change the body, validation will fail."
+            },
+            "response": []
+        },
+        {
+            "name": "Trigger Manual Poll (Marketplace B)",
+            "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:3000/trigger-poll",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "3000",
+                    "path": [
+                        "trigger-poll"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Get Inventory",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:3000/inventory/PROD-POSTMAN-001",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "3000",
+                    "path": [
+                        "inventory",
+                        "PROD-POSTMAN-001"
+                    ]
+                }
+            },
+            "response": []
+        }
+    ]
+}
